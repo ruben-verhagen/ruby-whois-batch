@@ -1,5 +1,5 @@
 # ruby-whois-batch
-Implementation of Ruby Whois
+Implementation of <a href="https://whoisrb.org/">Ruby Whois</a>
 
 1. Install dependency gems by running the command
 > bundle install
