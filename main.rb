@@ -13,8 +13,15 @@ CSV.open(csv_file, "wb") do |csv|
   csv << ["url", "status", "disclaimer", "domain", "domain_id", "registered?", "available?", "created_on", "updated_on", "expires_on",
     "registrar", "registrant_contacts", "admin_contacts", "technical_contacts", "nameservers"]
 end
+
+# proxy_addr = 'http://anonymise.us/'
+# proxy_port = 80
+
+# ENV['http_proxy'] = 'http://anonymise.us:80'
+
+
 File.readlines(input_filename).each do |url|
-  url = url.chomp
+  url = url.chomp.gsub(/www./,"")
   puts "Looking up WHOIS record for #{url}"
   c = Whois::Client.new
   begin
@@ -35,5 +42,4 @@ File.readlines(input_filename).each do |url|
   rescue
     puts ".....lookup unsuccessful, unknown error"
   end
-
 end
