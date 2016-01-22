@@ -6,6 +6,10 @@ def yaml_clean(obj)
   return YAML::dump(obj).gsub(/\n/," ").gsub(/::/,"").gsub(/---/,"").gsub(/ ... /,"").gsub(/ - /,"").gsub(/!ruby\/struct/,"").gsub(/:WhoisRecord/,"")
 end
 
+proxies = File.open('proxies').read
+proxies_list = proxies.gsub!(/\r\n?/, "\n").split("\n")
+puts "Loaded #{proxies_list.length} proxies"
+
 input_filename = ARGV[0];
 csv_file = ARGV[1];
 
@@ -14,15 +18,13 @@ CSV.open(csv_file, "wb") do |csv|
     "registrar", "registrant_contacts", "admin_contacts", "technical_contacts", "nameservers"]
 end
 
-# proxy_addr = 'http://anonymise.us/'
-# proxy_port = 80
-
-# ENV['http_proxy'] = 'http://anonymise.us:80'
-
-
 File.readlines(input_filename).each do |url|
   url = url.chomp.gsub(/www./,"")
   puts "Looking up WHOIS record for #{url}"
+
+  ENV['http_proxy'] = "http://" + proxies_list[Random.rand(proxies_list.length)];
+  puts "Proxy #{ENV['http_proxy']} is being used"
+
   c = Whois::Client.new
   begin
     r = c.lookup(url)
