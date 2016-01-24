@@ -6,6 +6,27 @@ def yaml_clean(obj)
   return YAML::dump(obj).gsub(/\n/," ").gsub(/::/,"").gsub(/---/,"").gsub(/ ... /,"").gsub(/ - /,"").gsub(/!ruby\/struct/,"").gsub(/:WhoisRecord/,"")
 end
 
+
+def format_registrar(registrar)
+  return "id:#{registrar.id}, name:#{registrar.name}, organization:#{registrar.organization}, url:#{registrar.url}"
+end
+
+def format_contacts(contacts)
+  results = []
+  contacts.each do |c|
+    results.push "id:#{c.id}, type:#{c.type}, name:#{c.name}, organization:#{c.organization}, address:#{c.address}, city:#{c.city}, zip:#{c.zip}, state:#{c.state}, country:#{c.country}, country_code:#{c.country_code}, phone:#{c.phone}, fax:#{c.fax}, email:#{c.email}, url:#{c.url}, created_on:#{c.created_on}, updated_on:#{c.updated_on}"
+  end
+  return results.join("|")
+end
+
+def format_name_servers(name_servers)
+  results = []
+  name_servers.each do |ns|
+    results.push "name:#{ns.name}, ipv4:#{ns.ipv4}, ipv6:#{ns.ipv6}"
+  end
+  return results.join("|")
+end
+
 proxies = File.open('proxies').read
 proxies_list = proxies.gsub!(/\r\n?/, "\n").split("\n")
 puts "Loaded #{proxies_list.length} proxies"
@@ -36,7 +57,7 @@ File.readlines(input_filename).each do |url|
 
     CSV.open(csv_file, "ab") do |csv|
       csv << [url, r.status, r.disclaimer, r.domain, r.domain_id, r.registered?, r.available?, r.created_on, r.updated_on, r.expires_on,
-        yaml_clean(r.registrar), yaml_clean(r.registrant_contacts), yaml_clean(r.admin_contacts), yaml_clean(r.technical_contacts), yaml_clean(r.nameservers)]
+        format_registrar(r.registrar), format_contacts(r.registrant_contacts), format_contacts(r.admin_contacts), format_contacts(r.technical_contacts), format_name_servers(r.nameservers)]
     end
     puts ".....lookup successful, results are saved for #{url}"
   rescue Timeout::Error
