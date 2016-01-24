@@ -2,11 +2,6 @@ require 'whois'
 require 'csv'
 require 'yaml'
 
-def yaml_clean(obj)
-  return YAML::dump(obj).gsub(/\n/," ").gsub(/::/,"").gsub(/---/,"").gsub(/ ... /,"").gsub(/ - /,"").gsub(/!ruby\/struct/,"").gsub(/:WhoisRecord/,"")
-end
-
-
 def format_registrar(registrar)
   return "id:#{registrar.id}, name:#{registrar.name}, organization:#{registrar.organization}, url:#{registrar.url}"
 end
