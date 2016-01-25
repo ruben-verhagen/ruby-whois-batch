@@ -3,13 +3,17 @@ require 'csv'
 require 'yaml'
 
 def format_registrar(registrar)
-  return "id:#{registrar.id}, name:#{registrar.name}, organization:#{registrar.organization}, url:#{registrar.url}"
+  if registrar.nil?
+    return ""
+  else
+    return "name:#{registrar.name}, organization:#{registrar.organization}, url:#{registrar.url}"
+  end
 end
 
 def format_contacts(contacts)
   results = []
   contacts.each do |c|
-    results.push "id:#{c.id}, type:#{c.type}, name:#{c.name}, organization:#{c.organization}, address:#{c.address}, city:#{c.city}, zip:#{c.zip}, state:#{c.state}, country:#{c.country}, country_code:#{c.country_code}, phone:#{c.phone}, fax:#{c.fax}, email:#{c.email}, url:#{c.url}, created_on:#{c.created_on}, updated_on:#{c.updated_on}"
+    results.push "type:#{c.type}, name:#{c.name}, organization:#{c.organization}, address:#{c.address}, city:#{c.city}, zip:#{c.zip}, state:#{c.state}, country:#{c.country}, country_code:#{c.country_code}, phone:#{c.phone}, fax:#{c.fax}, email:#{c.email}, url:#{c.url}, created_on:#{c.created_on}, updated_on:#{c.updated_on}"
   end
   return results.join("|")
 end
@@ -35,6 +39,7 @@ CSV.open(csv_file, "wb") do |csv|
 end
 
 File.readlines(input_filename).each do |url|
+  sleep 2
   url = url.chomp.gsub(/www./,"")
   puts "Looking up WHOIS record for #{url}"
 
