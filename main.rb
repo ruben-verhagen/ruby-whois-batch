@@ -37,6 +37,7 @@ CSV.open(csv_file, "wb") do |csv|
   csv << ["url", "status", "disclaimer", "domain", "domain_id", "registered?", "available?", "created_on", "updated_on", "expires_on",
     "registrar", "registrant_contacts", "admin_contacts", "technical_contacts", "nameservers"]
 end
+File.open('errors', 'w') {|file| file.truncate(0) }
 
 File.readlines(input_filename).each do |url|
   sleep 2
@@ -63,6 +64,8 @@ File.readlines(input_filename).each do |url|
   rescue Timeout::Error
     puts ".....lookup unsuccessful, request timed out"
   rescue
-    puts ".....lookup unsuccessful, unknown error"
+    puts r
+    File.open('errors', 'a') { |f| f.write("#{url}\n") }
+    # puts ".....lookup unsuccessful, unknown error"
   end
 end
