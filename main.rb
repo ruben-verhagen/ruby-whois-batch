@@ -26,10 +26,6 @@ def format_name_servers(name_servers)
   return results.join("|")
 end
 
-proxies = File.open('proxies').read
-proxies_list = proxies.gsub!(/\r\n?/, "\n").split("\n")
-puts "Loaded #{proxies_list.length} proxies"
-
 input_filename = ARGV[0];
 csv_file = ARGV[1];
 
@@ -37,15 +33,12 @@ CSV.open(csv_file, "wb") do |csv|
   csv << ["url", "status", "disclaimer", "domain", "domain_id", "registered?", "available?", "created_on", "updated_on", "expires_on",
     "registrar", "registrant_contacts", "admin_contacts", "technical_contacts", "nameservers"]
 end
-File.open('errors', 'w') {|file| file.truncate(0) }
 
+File.open('errors', 'w') {|file| file.truncate(0) }
 File.readlines(input_filename).each do |url|
   sleep 2
   url = url.chomp.gsub(/www./,"")
   puts "Looking up WHOIS record for #{url}"
-
-  ENV['http_proxy'] = "http://" + proxies_list[Random.rand(proxies_list.length)];
-  puts "Proxy #{ENV['http_proxy']} is being used"
 
   c = Whois::Client.new
   begin
@@ -65,7 +58,7 @@ File.readlines(input_filename).each do |url|
     puts ".....lookup unsuccessful, request timed out"
   rescue
     puts r
-    File.open('errors', 'a') { |f| f.write("#{url}\n") }
+    File.open('urls-failed', 'a') { |f| f.write("#{url}\n") }
     # puts ".....lookup unsuccessful, unknown error"
   end
 end
